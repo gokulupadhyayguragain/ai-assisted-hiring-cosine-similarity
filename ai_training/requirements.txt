@@ -1,0 +1,38 @@
+# ===============================
+# AI Training Dependencies
+# ===============================
+# These are HEAVY dependencies for training only.
+# The backend only needs requirements.txt (lightweight serving deps).
+
+# Core ML
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.0.0
+
+# Sentence Transformers for the 300m fine-tuning path
+sentence-transformers>=3.0.0
+
+# Transformers for tokenizer
+# (needed by from-scratch training for MiniBERT tokenizer)
+transformers>=4.30.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# File format handling
+pypdf>=5.0.0
+python-docx>=1.1.2
+openpyxl>=3.1.0
+
+# Kaggle dataset download
+kagglehub>=0.3.0
+kaggle>=1.6.0
+
+# Utilities
+rapidfuzz>=3.0.0
+tqdm>=4.65.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+joblib>=1.3.0
+requests>=2.31.0

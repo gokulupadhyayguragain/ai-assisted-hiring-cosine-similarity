@@ -1,0 +1,31 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+python-multipart>=0.0.9
+pypdf>=5.0.0
+python-docx>=1.1.2
+reportlab>=4.2.0
+scikit-learn>=1.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+Pillow>=10.0.0
+PyMuPDF>=1.24.0
+pytesseract>=0.3.10
+
+# === New Recommended Stack (BGE Small EN + spaCy + BM25) ===
+# Sentence-Transformers for BGE Small EN embeddings (lightweight, ~33MB)
+sentence-transformers>=3.0.0
+# spaCy for advanced NLP preprocessing (NER, lemmatization, tokenization)
+spacy>=3.7.0
+# BM25 scoring for improved keyword matching
+rank-bm25>=0.2.0
+
+# === Qwen2.5 3B Instruct for LLM-powered candidate summaries ===
+# transformers and accelerate are small libs needed for model loading
+transformers>=4.30.0
+accelerate>=0.25.0
+# bitsandbytes enables 4-bit quantization (GPU only, uncomment for GPU setups):
+# bitsandbytes>=0.43.0
+
+# torch is installed separately via Dockerfile with CPU index
+# --extra-index-url https://download.pytorch.org/whl/cpu
+# torch>=2.0.0

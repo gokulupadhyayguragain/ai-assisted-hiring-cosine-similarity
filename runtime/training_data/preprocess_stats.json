@@ -1,0 +1,22 @@
+{
+  "started_at": 1780313682.2189555,
+  "input_dir": "/home/gocools/gokul/datasets",
+  "output_dir": "/home/gocools/gokul/runtime/training_data",
+  "datasets_processed": 10,
+  "files_by_type": {
+    "csv": 9,
+    "xlsx": 1,
+    "json": 3,
+    "txt": 0,
+    "md": 0,
+    "pdf": 1,
+    "docx": 932
+  },
+  "total_files": 946,
+  "extracted_rows": 2153,
+  "final_rows": 2054,
+  "pairs_generated": 5395,
+  "corpus_size_mb": 1.8835906982421875,
+  "elapsed_seconds": 134.28050875663757,
+  "consolidated_size_mb": 2.0069751739501953
+}

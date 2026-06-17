@@ -1,0 +1,19 @@
+services:
+  backend-test:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: sh -c "pip install --no-cache-dir pytest httpx && pytest backend/tests -q"
+    environment:
+      ENABLE_SBERT: "0"
+      PYTHONPATH: /app
+
+  training-test:
+    build:
+      context: .
+      dockerfile: ai_training/Dockerfile
+    command: sh -c "pip install --no-cache-dir pytest && pytest ai_training/tests -q"
+    environment:
+      PYTHONPATH: /app
+    profiles:
+      - testing

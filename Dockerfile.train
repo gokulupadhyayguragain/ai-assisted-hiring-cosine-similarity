@@ -1,0 +1,61 @@
+# ============================================================================
+# Dockerfile for Local Preprocessing + Tiny Training
+#
+# Build:
+#   docker build -f Dockerfile.train -t resumate-train .
+#
+# Run preprocessing only (quick test):
+#   docker run --rm -v $(pwd)/datasets:/app/datasets:ro \
+#     -v $(pwd)/runtime:/app/runtime resumate-train \
+#     python backend/tools/preprocess_full.py --quick-test
+#
+# Run full preprocessing + training:
+#   docker run --rm -v $(pwd)/datasets:/app/datasets:ro \
+#     -v $(pwd)/runtime:/app/runtime resumate-train \
+#     bash -c "python backend/tools/preprocess_full.py && python backend/tools/train_tiny.py --quick-test"
+#
+# Run training only (if data already preprocessed):
+#   docker run --rm -v $(pwd)/runtime:/app/runtime resumate-train \
+#     python backend/tools/train_tiny.py --quick-test
+#
+# ============================================================================
+
+FROM python:3.12-slim AS base
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+# Install system dependencies needed for numpy, scikit-learn, etc.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---- Core data processing dependencies ----
+RUN pip install --no-cache-dir \
+    pandas==2.2.3 \
+    numpy==1.26.4 \
+    scikit-learn==1.5.2 \
+    pypdf==5.1.0 \
+    python-docx==1.1.2 \
+    openpyxl==3.1.5 \
+    tqdm==4.67.1
+
+# ---- PyTorch (CPU) + Hugging Face ----
+RUN pip install --no-cache-dir \
+    --extra-index-url https://download.pytorch.org/whl/cpu \
+    torch==2.7.1+cpu \
+    transformers==4.48.3 \
+    sentence-transformers==3.4.1
+
+# Copy over the project source (only the parts needed for processing and training)
+COPY backend/ ./backend/
+
+# Create runtime directories
+RUN mkdir -p /app/runtime/training_data /app/runtime/models
+
+# Default: run preprocessing then tiny training
+ENTRYPOINT ["bash", "-c"]
+CMD ["echo '=== Preprocessing ===' && python backend/tools/preprocess_full.py && echo '=== Training ===' && python backend/tools/train_tiny.py --quick-test"]

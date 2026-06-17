@@ -1,0 +1,1295 @@
+
+
+
+IR FYP.md
+File
+study this all , understand all the context .. give me prompt for making UI for google stitches ... :
+full detailed UI:
+full compact but not crowded .. which means single single feature / functionality in each single path/ or page .. popup UI smoothest transitions .. glass bg effect :
+and many more thing like consistent :
+max give all tings .... 
+
+Based on your FYP document, the product is not a generic ATS. It's an AI-Assisted Hiring Platform focused on:
+
+Resume ↔ Job Description matching
+
+TF-IDF + BERT semantic scoring
+
+Cosine Similarity ranking
+
+Resume anonymization
+
+Explainable AI
+
+Bias Audit
+
+Transparency Reports
+
+Recruiter Dashboard
+
+Candidate Dashboard
+
+SME-friendly modern experience
+
+Your biggest UI mistake would be trying to put everything on one dashboard.
+
+Instead:
+
+One purpose = One screen.
+No crowded cards.
+No mega dashboard.
+Every action has its own flow.
+
+GOOGLE STITCHES MASTER PROMPT
+Design a world-class SaaS web application called "AIHire".
+
+Purpose:
+An AI-powered recruitment platform that uses TF-IDF + BERT embeddings + Cosine Similarity to rank candidates against job descriptions while ensuring fairness, transparency, explainability, and anonymized screening.
+
+Design Style:
+
+Premium SaaS
+
+Apple-level polish
+
+Glassmorphism
+
+Modern enterprise UI
+
+Clean whitespace
+
+Not crowded
+
+Smooth micro-interactions
+
+Soft shadows
+
+Frosted glass panels
+
+Layered depth
+
+Consistent spacing system
+
+Consistent typography system
+
+Professional HR-tech aesthetic
+
+Dark mode first
+
+Mobile responsive
+
+Desktop optimized
+
+Minimal but powerful
+
+Color System:
+
+Background:
+#050816
+
+Glass Panels:
+rgba(255,255,255,0.06)
+
+Border:
+rgba(255,255,255,0.08)
+
+Primary:
+#6366F1
+
+Accent:
+#22D3EE
+
+Success:
+#22C55E
+
+Warning:
+#F59E0B
+
+Danger:
+#EF4444
+
+Text:
+#FFFFFF
+
+Secondary Text:
+#A1A1AA
+
+Design Rules:
+
+Every page has one primary purpose
+
+Avoid dashboard clutter
+
+Maximum focus on task completion
+
+One feature per screen
+
+No overloaded cards
+
+Large breathing space
+
+Elegant animations
+
+Smooth page transitions
+
+Framer Motion style interactions
+
+Hover effects subtle
+
+Loading states beautiful
+
+Skeleton loaders
+
+Glass modal dialogs
+
+Floating command palette
+
+Consistent border radius 24px
+
+Consistent spacing scale
+
+Consistent iconography
+
+Consistent button hierarchy
+
+Navigation Structure:
+
+Login
+
+Onboarding
+
+Recruiter Workspace
+
+Candidate Workspace
+
+Reports
+
+Settings
+
+PAGE 1 — LOGIN
+Minimal center card
+
+Logo
+
+Headline:
+"Fair AI-Powered Hiring"
+
+Subheadline:
+"Rank talent based on skills, not bias."
+
+Google Login
+
+Email Login
+
+Animated background particles
+
+Glass card
+
+PAGE 2 — ONBOARDING
+Step Wizard
+
+Step 1:
+Company Details
+
+Step 2:
+Industry
+
+Step 3:
+Hiring Volume
+
+Step 4:
+Team Size
+
+Step 5:
+Success Animation
+
+Progress Indicator
+
+Full-screen experience
+
+PAGE 3 — HOME DASHBOARD
+Do NOT overload.
+
+Only show:
+
+Active Jobs
+
+Candidates Screened
+
+Average Match Score
+
+Time Saved
+
+Recent Activity
+
+Quick Actions
+
+Create Job
+
+Upload Resumes
+
+Run AI Screening
+
+Generate Report
+
+Large clean layout
+
+PAGE 4 — CREATE JOB
+Dedicated page
+
+Job Title
+
+Department
+
+Experience
+
+Skills
+
+Location
+
+Salary
+
+Description Editor
+
+AI Suggestions
+
+Bias Checker Preview
+
+Save Job
+
+No sidebar distractions
+
+PAGE 5 — JOB DETAILS
+Single job focus
+
+Job Summary
+
+Requirements
+
+Expected Skills
+
+Applicants Count
+
+Screening Status
+
+Actions
+
+Upload Resumes
+
+Run Matching
+
+View Rankings
+
+Generate Report
+
+PAGE 6 — RESUME UPLOAD
+Dedicated upload workflow
+
+Large drag-drop zone
+
+Multiple file upload
+
+PDF
+
+DOCX
+
+Batch upload
+
+Upload Progress
+
+Parsing Progress
+
+Animated status indicators
+
+Success state
+
+PAGE 7 — AI PROCESSING SCREEN
+Full-screen processing
+
+Visual pipeline animation
+
+Upload
+
+Extract
+
+Anonymize
+
+TF-IDF
+
+BERT
+
+Cosine Similarity
+
+Ranking
+
+Explainability
+
+Live progress
+
+Modern AI feeling
+
+PAGE 8 — CANDIDATE RANKINGS
+Single purpose:
+Ranking only
+
+Table view
+
+Rank
+
+Candidate ID
+
+Match Score
+
+Experience
+
+Skills
+
+Status
+
+Filter panel
+
+Sort panel
+
+Search
+
+No unnecessary widgets
+
+PAGE 9 — CANDIDATE PROFILE
+Detailed candidate page
+
+Anonymized View
+
+Match Score
+
+Skill Match %
+
+Experience Analysis
+
+Education Analysis
+
+Strengths
+
+Weaknesses
+
+Skill Heatmap
+
+Explainability Breakdown
+
+Similarity Graph
+
+Decision Notes
+
+PAGE 10 — SKILL GAP ANALYSIS
+Focused page
+
+Matched Skills
+
+Missing Skills
+
+Recommended Skills
+
+Visual comparison
+
+Radar charts
+
+Heatmaps
+
+Glass cards
+
+PAGE 11 — BIAS AUDIT PAGE
+Dedicated audit experience
+
+Analyze Job Description
+
+Detect:
+
+Gender Bias
+
+Age Bias
+
+Exclusionary Terms
+
+Warnings
+
+Recommendations
+
+AI Rewrite Suggestions
+
+Compliance Score
+
+PAGE 12 — TRANSPARENCY REPORT
+Candidate Report
+
+Match Score
+
+Why This Score
+
+Matched Skills
+
+Missing Skills
+
+Recommendations
+
+Explainability Graph
+
+PDF Preview
+
+Download Report
+
+PAGE 13 — ANALYTICS
+Recruitment Insights
+
+Applications
+
+Screening Time Saved
+
+Match Distribution
+
+Hiring Funnel
+
+Top Skills
+
+Most Missing Skills
+
+Interactive Charts
+
+PAGE 14 — CANDIDATE PORTAL
+Resume Upload
+
+Job Match Score
+
+Resume Strength
+
+Missing Skills
+
+Career Suggestions
+
+Improvement Recommendations
+
+Transparency View
+
+PAGE 15 — SETTINGS
+Organization
+
+Users
+
+Permissions
+
+API Keys
+
+Billing
+
+Integrations
+
+Notifications
+
+Security
+
+MODAL DESIGN SYSTEM
+Every popup:
+
+Glass background
+
+Backdrop blur 30px
+
+Scale animation
+
+Fade animation
+
+Spring motion
+
+Rounded corners 28px
+
+Soft shadow
+
+Never full screen unless necessary
+
+ANIMATION SYSTEM
+Page Transition:
+300ms
+
+Fade + Slide
+
+Card Hover:
+Scale 1.02
+
+Button Hover:
+Soft glow
+
+Modal:
+Spring entrance
+
+Loading:
+Skeleton shimmer
+
+Charts:
+Progressive reveal
+
+COMPONENT SYSTEM
+Buttons:
+Primary
+Secondary
+Ghost
+Danger
+
+Cards:
+Glass cards
+
+Tables:
+Sticky headers
+
+Inputs:
+Floating labels
+
+Dropdowns:
+Searchable
+
+Command Palette:
+Global search
+
+Notifications:
+Top right glass toasts
+
+MOBILE EXPERIENCE
+Fully responsive
+
+Bottom navigation
+
+Swipe gestures
+
+Compact layouts
+
+No horizontal scrolling
+
+Touch optimized
+
+FINAL GOAL
+Create a premium enterprise-grade AI Recruitment SaaS that feels like a combination of Linear, Notion, Stripe Dashboard, and Apple Human Interface Design.
+
+The experience should feel trustworthy, intelligent, transparent, modern, and effortless.
+
+Prioritize clarity over feature density.
+Prioritize workflow over dashboards.
+Prioritize explainability over complexity.
+Prioritize elegance over decoration.
+
+This prompt will give Google Stitch a much better result because it defines:
+
+Complete IA (information architecture)
+
+Exact page hierarchy
+
+Design language
+
+Motion system
+
+Glassmorphism rules
+
+UX philosophy
+
+Recruiter flow
+
+Candidate flow
+
+AI explainability flow
+
+And it matches your FYP requirements: anonymization, ranking, explainability, bias audit, transparency reports, recruiter dashboard, and candidate portal. 
+
+ 
+
+
+
+more detailed each page prompt not overall,,. each and every single page prompts .. 
+
+That's actually the correct way to do it with Stitch.
+
+Don't give Stitch one giant prompt.
+
+Give Stitch one page = one prompt.
+
+That's how you get production-quality UI instead of generic dashboard garbage.
+
+MASTER DESIGN RULES (ADD TO EVERY PAGE)
+Copy this at the beginning of every page prompt:
+
+Design a premium enterprise SaaS web application.
+
+Style:
+
+Apple + Linear + Stripe + Notion quality
+
+Glassmorphism
+
+Dark mode
+
+Frosted glass panels
+
+Elegant spacing
+
+Modern HR-tech product
+
+Extremely clean
+
+Not crowded
+
+Focused layout
+
+One task per screen
+
+Consistent design system
+
+Large whitespace
+
+Soft shadows
+
+Subtle gradients
+
+Micro interactions
+
+Framer Motion style animations
+
+Smooth transitions
+
+Rounded corners 24px
+
+Professional typography
+
+Responsive desktop first
+
+Mobile adaptive
+
+Color Palette:
+Background #050816
+Primary #6366F1
+Accent #22D3EE
+Success #22C55E
+Warning #F59E0B
+Danger #EF4444
+
+Glass Card:
+backdrop blur 24px
+transparent surface
+soft border
+elevated depth
+
+Avoid:
+
+crowded dashboards
+
+tiny cards
+
+too many charts
+
+excessive widgets
+
+clutter
+
+crypto style UI
+
+generic admin templates
+
+PAGE 1 — LOGIN PAGE
+Design the Login page.
+
+Goal:
+Create trust instantly.
+
+Layout:
+
+Left side:
+Large hero section
+
+Headline:
+AI-Assisted Hiring
+
+Subheadline:
+Find talent based on skills, not bias.
+
+Features preview:
+
+✓ Semantic Matching
+✓ Resume Anonymization
+✓ Explainable AI
+✓ Bias Detection
+
+Animated hiring workflow illustration.
+
+Right side:
+Floating glass login card
+
+Card contains:
+
+Logo
+
+Welcome Back
+
+Email
+
+Password
+
+Remember Me
+
+Forgot Password
+
+Login Button
+
+Divider
+
+Continue with Google
+
+Continue with Microsoft
+
+Footer:
+Terms
+Privacy
+
+Interaction:
+
+Inputs glow on focus.
+
+Button has smooth hover.
+
+Card slightly floats.
+
+Background:
+Animated gradient mesh.
+Moving particles.
+Very subtle.
+
+PAGE 2 — RECRUITER DASHBOARD
+Design a recruiter dashboard.
+
+Important:
+
+DO NOT make it crowded.
+
+Only show important information.
+
+Layout:
+
+Top Navigation
+
+Logo
+
+Search
+
+Notifications
+
+Profile
+
+Main Content
+
+Header:
+Good Morning, Recruiter
+
+Quick Actions
+
+Create Job
+
+Upload Resumes
+
+Run Screening
+
+Generate Report
+
+KPI Row
+
+Active Jobs
+
+Candidates Processed
+
+Average Match %
+
+Hours Saved
+
+Recent Activity
+
+Latest candidate uploads
+
+Latest screening runs
+
+Latest reports
+
+Right Panel
+
+AI Insights
+
+Top skills trending
+
+Most requested technologies
+
+Hiring recommendations
+
+Large whitespace.
+
+Professional feeling.
+
+No more than 5 cards visible initially.
+
+PAGE 3 — CREATE JOB PAGE
+Design a dedicated Create Job page.
+
+Single purpose screen.
+
+Layout:
+
+Large form container.
+
+Section 1
+
+Job Title
+
+Department
+
+Employment Type
+
+Location
+
+Salary Range
+
+Section 2
+
+Required Skills
+
+Tag Input
+
+Autocomplete
+
+Skill Suggestions
+
+Section 3
+
+Experience
+
+Minimum Years
+
+Education
+
+Preferred Qualifications
+
+Section 4
+
+Job Description Editor
+
+Rich Text Editor
+
+AI Writing Assistant
+
+Rewrite Button
+
+Improve Clarity Button
+
+Bias Check Button
+
+Live Preview
+
+Right Sidebar
+
+Job Score
+
+Completeness %
+
+Bias Risk %
+
+Estimated Candidate Pool
+
+Bottom
+
+Save Draft
+
+Publish Job
+
+Cancel
+
+Very clean.
+Very focused.
+
+PAGE 4 — RESUME UPLOAD PAGE
+Design Resume Upload page.
+
+Purpose:
+Upload resumes.
+
+Entire screen focused on uploading.
+
+Center:
+
+Massive drag-drop zone.
+
+Upload Area:
+
+Upload PDF
+
+Upload DOCX
+
+Drag & Drop
+
+Browse Files
+
+Below:
+
+Uploaded Files Table
+
+Filename
+
+Status
+
+Progress
+
+Size
+
+Preview
+
+Actions
+
+Right Side
+
+Upload Guidelines
+
+Supported Formats
+
+Resume Quality Checker
+
+Processing Estimate
+
+Bottom Sticky Bar
+
+Start AI Screening
+
+Show total resumes selected
+
+Smooth upload animations
+
+Beautiful progress indicators
+
+No distractions.
+
+PAGE 5 — AI SCREENING PAGE
+Design the AI Processing screen.
+
+This should feel like OpenAI meets Stripe.
+
+Full-screen experience.
+
+Center Timeline:
+
+Step 1
+Resume Parsing
+
+Step 2
+Text Extraction
+
+Step 3
+Anonymization
+
+Step 4
+TF-IDF Analysis
+
+Step 5
+BERT Embedding
+
+Step 6
+Cosine Similarity
+
+Step 7
+Candidate Ranking
+
+Step 8
+Explainability Generation
+
+Each step animated.
+
+Progress line.
+
+Live percentages.
+
+Right Panel
+
+System Metrics
+
+Resumes Processed
+
+Average Time
+
+Queue Status
+
+Confidence Level
+
+Background:
+AI neural network animation.
+
+Very futuristic.
+
+PAGE 6 — CANDIDATE RANKING PAGE
+Design Candidate Ranking page.
+
+Purpose:
+View ranked candidates.
+
+Layout:
+
+Top
+
+Job Information
+
+Role
+
+Department
+
+Required Skills
+
+Total Applicants
+
+Filters
+
+Score Range
+
+Experience
+
+Skills
+
+Location
+
+Education
+
+Main Area
+
+Large ranking table
+
+Rank
+
+Candidate ID
+
+Match %
+
+Experience
+
+Skill Match %
+
+Education
+
+Status
+
+Action
+
+Each row expandable.
+
+Expanded row shows:
+
+Strengths
+
+Weaknesses
+
+Matched Skills
+
+Missing Skills
+
+Explanation Summary
+
+Right Panel
+
+AI Recommendation
+
+Top Candidate
+
+Potential Risks
+
+Suggested Interviews
+
+Clean enterprise feeling.
+
+PAGE 7 — CANDIDATE DETAILS PAGE
+This page should be the most beautiful page in the whole app.
+
+Design Candidate Details page.
+
+Layout:
+
+Hero Section
+
+Anonymous Candidate ID
+
+Match Score
+
+Hiring Recommendation
+
+Confidence Level
+
+Large Circular Score Visualization
+
+Section 1
+
+Skill Analysis
+
+Matched Skills
+
+Missing Skills
+
+Related Skills
+
+Skill Heatmap
+
+Section 2
+
+Experience Breakdown
+
+Years Experience
+
+Projects
+
+Industries
+
+Career Timeline
+
+Section 3
+
+Explainability Engine
+
+Why candidate scored this
+
+Positive factors
+
+Negative factors
+
+AI reasoning
+
+Contribution chart
+
+Section 4
+
+Interview Readiness
+
+Strength Areas
+
+Concern Areas
+
+Suggested Questions
+
+Decision Notes
+
+Actions
+
+Shortlist
+
+Reject
+
+Export PDF
+
+Share Report
+
+Extremely premium.
+Feels like a $100M SaaS.
+
+PAGE 8 — BIAS AUDIT PAGE
+Design Bias Audit page.
+
+Purpose:
+Analyze job descriptions.
+
+Layout:
+
+Large text editor.
+
+Paste job description.
+
+Analyze Button.
+
+Results:
+
+Bias Score
+
+Gender Bias
+
+Age Bias
+
+Disability Bias
+
+Exclusionary Language
+
+Color-coded severity.
+
+AI Suggestions:
+
+Original Text
+
+Recommended Rewrite
+
+Highlighted Changes
+
+Compliance Score
+
+Inclusiveness Score
+
+Accessibility Score
+
+Beautiful comparison UI.
+
+Glass cards.
+
+PAGE 9 — TRANSPARENCY REPORT PAGE
+Design Transparency Report page.
+
+Purpose:
+Explain why score exists.
+
+Sections:
+
+Overall Match Score
+
+Matching Skills
+
+Missing Skills
+
+Experience Alignment
+
+Education Alignment
+
+Similarity Explanation
+
+Visual Charts
+
+Contribution Breakdown
+
+AI Narrative Summary
+
+Timeline View
+
+PDF Preview
+
+Download Report
+
+Export Report
+
+Print Report
+
+Should feel trustworthy.
+
+Government-grade transparency.
+
+For Stitch, the best workflow is:
+
+Generate Login
+
+Generate Dashboard
+
+Generate Create Job
+
+Generate Upload
+
+Generate Processing
+
+Generate Rankings
+
+Generate Candidate Details
+
+Generate Bias Audit
+
+Generate Transparency Report
+
+Then ask Stitch:
+
+"Use the exact same design system, spacing, colors, typography, glass effects, border radius, animation language, and component library across every page. Maintain perfect visual consistency and design continuity."
+
+That usually produces a far more polished result than a single giant prompt.
+
+

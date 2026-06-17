@@ -1,0 +1,75 @@
+services:
+  # ---- Frontend (Next.js UI) ----
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+      INTERNAL_API_BASE: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  # ---- Backend API (serving only - no training) ----
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql://hiring:hiring@postgres:5432/hiring
+      REDIS_URL: redis://redis:6379/0
+      # Embedding model: BGE Small EN (lightweight, ~33 MB)
+      EMBEDDING_MODEL: "BAAI/bge-small-en-v1.5"
+      # Enable semantic/embedding features
+      ENABLE_SBERT: "1"
+      # LLM (Qwen2.5 3B Instruct) — disabled by default, enable after pre-downloading the model
+      # To enable, set ENABLE_LLM=1 and ensure ~6 GB free RAM for CPU float16 loading
+      ENABLE_LLM: "0"
+      LLM_MODEL: "Qwen/Qwen2.5-3B-Instruct"
+    volumes:
+      - backend-runtime:/app/backend/runtime
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    command: ["sh", "/app/backend/startup.sh"]
+
+  # ---- AI Training (heavy deps for training only) ----
+  ai-trainer:
+    build:
+      context: .
+      dockerfile: ai_training/Dockerfile
+    environment:
+      APP_ENV: development
+    volumes:
+      - training-data:/app/ai_training/runtime
+      - ./datasets:/app/datasets:ro
+    command: ["python", "train_tiny.py", "--quick-test"]
+    profiles:
+      - training
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: hiring
+      POSTGRES_PASSWORD: hiring
+      POSTGRES_DB: hiring
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  backend-runtime:
+  training-data:
+  postgres-data:

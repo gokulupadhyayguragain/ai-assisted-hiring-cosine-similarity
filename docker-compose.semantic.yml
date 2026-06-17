@@ -1,0 +1,7 @@
+# Docker Compose override for using AI training container.
+# Run: docker compose -f docker-compose.yml -f docker-compose.semantic.yml up ai-trainer
+services:
+  ai-trainer:
+    environment:
+      MODEL_SIZE: 10m
+    command: ["python", "train_tiny.py", "--quick-test"]

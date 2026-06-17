@@ -1,0 +1,120 @@
+# Combined local compose for frontend, backend, AI trainer, DB, and Redis
+#
+# Usage:
+#   docker compose -f docker-compose.local.all.yaml up --build -d
+#   # Wait ~30s for BGE model download on first run, then visit http://localhost:3000
+#
+# Full stack (no training):
+#   docker compose -f docker-compose.local.all.yaml up --build
+#
+# With training profile:
+#   docker compose -f docker-compose.local.all.yaml --profile training up --build
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+      INTERNAL_API_BASE: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql://hiring:hiring@postgres:5432/hiring
+      REDIS_URL: redis://redis:6379/0
+      # Embedding model: BGE Small EN (lightweight, ~33 MB, auto-downloaded on first run)
+      EMBEDDING_MODEL: "BAAI/bge-small-en-v1.5"
+      # Enable semantic/embedding features
+      ENABLE_SBERT: "1"
+      # LLM (Qwen2.5 3B Instruct) — disabled by default (~6 GB RAM on CPU)
+      ENABLE_LLM: "0"
+      LLM_MODEL: "Qwen/Qwen2.5-3B-Instruct"
+    volumes:
+      - backend-runtime:/app/backend/runtime
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["sh", "/app/backend/startup.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; exit(0 if urllib.request.urlopen(\"http://localhost:8000/health\", timeout=5).status == 200 else 1)'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  ai-trainer:
+    build:
+      context: .
+      dockerfile: ai_training/Dockerfile
+    environment:
+      APP_ENV: development
+    volumes:
+      - ./runtime/training_data:/app/runtime/training_data:ro
+      - ./ai_model:/app/runtime/models
+    profiles:
+      - training
+    networks:
+      - localnet
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: hiring
+      POSTGRES_PASSWORD: hiring
+      POSTGRES_DB: hiring
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hiring -d hiring"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 10s
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+    networks:
+      - localnet
+    restart: unless-stopped
+
+volumes:
+  backend-runtime:
+  postgres-data:
+
+networks:
+  localnet:
+    driver: bridge
