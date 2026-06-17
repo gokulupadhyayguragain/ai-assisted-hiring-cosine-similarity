@@ -35,3 +35,20 @@ data/processed/
 
 # Jupyter notebooks
 *.ipynb
+
+ai_training/_pycache__/
+ai_training/tests/__pycache__/
+
+backend/_pycache__/
+backend/app/_pycache__/
+backend/app/services/_pycache__/
+backend/app/runtime/
+backend/tests/_pycache__/
+
+datasets/
+
+frontend/node_modules/
+frontend/.next/
+
+
+
