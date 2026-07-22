@@ -6,11 +6,11 @@ type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-nepal-sheen text-white font-semibold shadow-glow hover:shadow-[0_0_50px_rgba(0,56,147,0.4)] hover:brightness-110",
-  secondary: "bg-white/10 text-white border border-white/15 hover:bg-white/15 backdrop-blur-md",
-  ghost: "text-zinc-300 hover:text-white hover:bg-white/5",
-  outline: "border border-blue/40 text-blue hover:bg-blue/10",
-  danger: "bg-red text-white hover:bg-red-soft shadow-glow-red",
+    "bg-gradient-to-r from-blue to-blue-soft text-white font-semibold shadow-sm hover:shadow-glow hover:brightness-110",
+  secondary: "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200",
+  ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
+  outline: "border border-blue/40 text-blue hover:bg-blue-light",
+  danger: "bg-red text-white hover:bg-red-soft shadow-sm",
 };
 
 const sizes: Record<Size, string> = {

@@ -1,0 +1,167 @@
+# ===========================================================================
+# AIHire — LOCAL development stack
+# ===========================================================================
+# Frontend + Backend + Postgres + Redis, with healthchecks, a private network,
+# and restart policies. Secrets (Google OAuth, Resend, JWT) come from ./.env.
+#
+# Usage:
+#   docker compose -f docker-compose.local.yml up --build            # full stack
+#   docker compose -f docker-compose.local.yml --profile training up  # + AI trainer
+#   docker compose -f docker-compose.local.yml --profile testing up   # run test suites
+#
+# Helper scripts: ./start.sh and ./stop.sh wrap this file.
+# First run downloads the BGE Small EN model (~33 MB); allow ~30s before use.
+# ===========================================================================
+
+services:
+  # ---- Frontend (Next.js UI) ----
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE: http://localhost:8000
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+      INTERNAL_API_BASE: http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  # ---- Backend API (FastAPI — serving only, no training) ----
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - .env
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql://hiring:hiring@postgres:5432/hiring
+      REDIS_URL: redis://redis:6379/0
+      # Frontend URL for OAuth redirect + verification links
+      APP_URL: "http://localhost:3000"
+      # Embedding model: BGE Small EN (lightweight, ~33 MB, auto-downloaded)
+      EMBEDDING_MODEL: "BAAI/bge-small-en-v1.5"
+      ENABLE_SBERT: "1"
+      # LLM (Qwen2.5 3B Instruct) — disabled by default (~6 GB RAM on CPU)
+      ENABLE_LLM: "0"
+      LLM_MODEL: "Qwen/Qwen2.5-3B-Instruct"
+      # Job Board (optional — leave empty to skip imports)
+      ADZUNA_APP_ID: ""
+      ADZUNA_API_KEY: ""
+    volumes:
+      - backend-runtime:/app/backend/runtime
+      - huggingface-cache:/root/.cache/huggingface
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["sh", "/app/backend/startup.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; exit(0 if urllib.request.urlopen(\"http://localhost:8000/health\", timeout=5).status == 200 else 1)'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  # ---- Postgres ----
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: hiring
+      POSTGRES_PASSWORD: hiring
+      POSTGRES_DB: hiring
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hiring -d hiring"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 10s
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  # ---- Redis ----
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+    networks:
+      - localnet
+    restart: unless-stopped
+
+  # ---- AI Training (heavy deps; only with --profile training) ----
+  ai-trainer:
+    build:
+      context: .
+      dockerfile: ai_training/Dockerfile
+    environment:
+      APP_ENV: development
+      MODEL_SIZE: "10m"
+    volumes:
+      - ./runtime/training_data:/app/runtime/training_data:ro
+      - ./ai_model:/app/runtime/models
+      - ./datasets:/app/datasets:ro
+    command: ["python", "train_tiny.py", "--quick-test"]
+    profiles:
+      - training
+    networks:
+      - localnet
+
+  # ---- Test runners (only with --profile testing) ----
+  backend-test:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: sh -c "pip install --no-cache-dir pytest httpx && pytest backend/tests -q"
+    environment:
+      ENABLE_SBERT: "0"
+      PYTHONPATH: /app
+    profiles:
+      - testing
+    networks:
+      - localnet
+
+  training-test:
+    build:
+      context: .
+      dockerfile: ai_training/Dockerfile
+    command: sh -c "pip install --no-cache-dir pytest && pytest ai_training/tests -q"
+    environment:
+      PYTHONPATH: /app
+    profiles:
+      - testing
+    networks:
+      - localnet
+
+volumes:
+  backend-runtime:
+  postgres-data:
+  huggingface-cache:
+
+networks:
+  localnet:
+    driver: bridge

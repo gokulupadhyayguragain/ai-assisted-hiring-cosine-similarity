@@ -431,6 +431,7 @@ class MatchingEngine:
                     suggestions=_suggestions(item["missing_skills"]),
                     anonymization=payload["anonymization"],
                     extraction_warnings=payload["document"].warnings,
+                    resume_text=payload["document"].text,
                 )
             )
 

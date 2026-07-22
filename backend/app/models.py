@@ -50,6 +50,7 @@ class CandidateResult:
     suggestions: list[str]
     anonymization: dict[str, int]
     extraction_warnings: list[str]
+    resume_text: str = ""
 
 
 @dataclass(slots=True)

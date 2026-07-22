@@ -21,6 +21,7 @@ export type CandidateResult = {
   suggestions: string[];
   anonymization: Record<string, number>;
   extraction_warnings: string[];
+  resume_text?: string;
 };
 
 export type AnalysisSession = {

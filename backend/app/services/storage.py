@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 
 from backend.app.models import AnalysisSession, to_plain
@@ -15,6 +18,75 @@ class SessionStore:
         self.jobs_root.mkdir(parents=True, exist_ok=True)
         self.database_url = os.getenv("DATABASE_URL", "")
         self.redis_url = os.getenv("REDIS_URL", "")
+
+    # ------------------------------------------------------------------
+    # Candidate resume library/history (user-scoped JSON persistence)
+    # ------------------------------------------------------------------
+
+    def _resume_user_root(self, user_id: str) -> Path:
+        safe_user = re.sub(r"[^a-zA-Z0-9_-]", "_", str(user_id))[:120] or "anonymous"
+        root = self.root / "resumes" / safe_user
+        root.mkdir(parents=True, exist_ok=True)
+        return root
+
+    def save_resume(self, user_id: str, filename: str, text: str, file_type: str) -> dict:
+        resume_id = uuid.uuid4().hex[:12]
+        now = datetime.now(UTC).isoformat()
+        record = {
+            "resume_id": resume_id,
+            "user_id": str(user_id),
+            "filename": filename or "resume",
+            "file_type": file_type or "txt",
+            "created_at": now,
+            "updated_at": now,
+            "text": text,
+            "analyses": [],
+        }
+        (self._resume_user_root(user_id) / f"{resume_id}.json").write_text(
+            json.dumps(record, indent=2), encoding="utf-8"
+        )
+        return record
+
+    def list_resumes(self, user_id: str, limit: int = 50) -> list[dict]:
+        records: list[dict] = []
+        for path in sorted(self._resume_user_root(user_id).glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
+            try:
+                record = json.loads(path.read_text(encoding="utf-8"))
+                record.pop("text", None)
+                records.append(record)
+            except (OSError, json.JSONDecodeError):
+                continue
+        return records[:max(1, min(limit, 100))]
+
+    def load_resume(self, user_id: str, resume_id: str) -> dict | None:
+        if not re.fullmatch(r"[a-fA-F0-9]{12}", resume_id):
+            return None
+        path = self._resume_user_root(user_id) / f"{resume_id}.json"
+        if not path.exists():
+            return None
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return None
+        return record if record.get("user_id") == str(user_id) else None
+
+    def delete_resume(self, user_id: str, resume_id: str) -> bool:
+        path = self._resume_user_root(user_id) / f"{resume_id}.json"
+        if not path.exists():
+            return False
+        path.unlink()
+        return True
+
+    def save_resume_analysis(self, user_id: str, resume_id: str, analysis: dict) -> dict | None:
+        record = self.load_resume(user_id, resume_id)
+        if record is None:
+            return None
+        record.setdefault("analyses", []).insert(0, analysis)
+        record["updated_at"] = datetime.now(UTC).isoformat()
+        path = self._resume_user_root(user_id) / f"{resume_id}.json"
+        path.write_text(json.dumps(record, indent=2), encoding="utf-8")
+        record.pop("text", None)
+        return record
 
     def save(self, session: AnalysisSession) -> None:
         plain = to_plain(session)

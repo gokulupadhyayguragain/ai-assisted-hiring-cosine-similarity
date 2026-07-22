@@ -18,7 +18,7 @@ export function SectionHeading({
     <Reveal className={cn("max-w-3xl", align === "center" ? "mx-auto text-center" : "text-left", className)}>
       {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
       <h2 className="display-title text-3xl sm:text-4xl md:text-5xl text-balance">{title}</h2>
-      {subtitle && <p className="mt-4 text-zinc-400 text-base md:text-lg leading-relaxed">{subtitle}</p>}
+      {subtitle && <p className="mt-4 text-gray-500 text-base md:text-lg leading-relaxed">{subtitle}</p>}
     </Reveal>
   );
 }

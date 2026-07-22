@@ -110,6 +110,94 @@ def candidate_report_pdf(session: dict, candidate_id: str) -> bytes:
     return buffer.getvalue()
 
 
+def resume_to_pdf(session: dict, candidate_id: str) -> bytes:
+    """Render a candidate's (anonymized) CV text into a clean, readable PDF.
+
+    Returns PDF bytes, or UTF-8 text bytes if reportlab is unavailable.
+    """
+    candidate = next(
+        (item for item in session.get("candidates", []) if item["candidate_id"] == candidate_id),
+        None,
+    )
+    if candidate is None:
+        raise KeyError(candidate_id)
+
+    resume_text = (candidate.get("resume_text") or "").strip()
+
+    try:
+        from xml.sax.saxutils import escape
+
+        from reportlab.lib import colors
+        from reportlab.lib.enums import TA_LEFT
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+        from reportlab.lib.units import inch
+        from reportlab.platypus import HRFlowable, Paragraph, SimpleDocTemplate, Spacer
+    except Exception:
+        return (resume_text or "No resume text available.").encode("utf-8")
+
+    styles = getSampleStyleSheet()
+    name_style = ParagraphStyle(
+        "CvName", parent=styles["Title"], fontSize=18, alignment=TA_LEFT,
+        textColor=colors.HexColor("#003893"), spaceAfter=2,
+    )
+    meta_style = ParagraphStyle(
+        "CvMeta", parent=styles["BodyText"], fontSize=9,
+        textColor=colors.HexColor("#6b7280"), spaceAfter=4,
+    )
+    section_style = ParagraphStyle(
+        "CvSection", parent=styles["Heading3"], fontSize=11,
+        textColor=colors.HexColor("#111111"), spaceBefore=10, spaceAfter=3,
+    )
+    body_style = ParagraphStyle(
+        "CvBody", parent=styles["BodyText"], fontSize=9.5, leading=13,
+        textColor=colors.HexColor("#27272a"),
+    )
+
+    exp = candidate.get("experience_years")
+    meta_bits = [
+        candidate.get("candidate_id", ""),
+        f"{exp}y experience" if exp else "Experience N/A",
+        f"Match {round(candidate.get('score') or 0)}%",
+    ]
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        rightMargin=0.7 * inch, leftMargin=0.7 * inch,
+        topMargin=0.7 * inch, bottomMargin=0.7 * inch,
+        title=f"{candidate.get('display_name') or 'Anonymous Candidate'} - CV",
+    )
+
+    story = [
+        Paragraph(escape(candidate.get("display_name") or "Anonymous Candidate"), name_style),
+        Paragraph(escape("  -  ".join(b for b in meta_bits if b)), meta_style),
+        HRFlowable(width="100%", thickness=0.6, color=colors.HexColor("#e4e4e7"), spaceAfter=6),
+    ]
+
+    matched = candidate.get("matched_skills") or []
+    missing = candidate.get("missing_skills") or []
+    if matched:
+        story.append(Paragraph(f"Matched Skills ({len(matched)})", section_style))
+        story.append(Paragraph(escape(", ".join(matched)), body_style))
+    if missing:
+        story.append(Paragraph(f"Skill Gaps ({len(missing)})", section_style))
+        story.append(Paragraph(escape(", ".join(missing)), body_style))
+
+    story.append(Paragraph("Resume", section_style))
+    if resume_text:
+        for line in resume_text.split("\n"):
+            if line.strip():
+                story.append(Paragraph(escape(line.rstrip()), body_style))
+            else:
+                story.append(Spacer(1, 5))
+    else:
+        story.append(Paragraph("No resume text available for this candidate.", body_style))
+
+    doc.build(story)
+    return buffer.getvalue()
+
+
 def _plain_report(session: dict, candidate: dict) -> str:
     return "\n".join(
         [

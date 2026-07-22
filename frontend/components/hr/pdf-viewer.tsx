@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { FileText, Download, ZoomIn, ZoomOut, AlertCircle } from "lucide-react";
 
-// Set worker for pdf.js
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+// Set worker for pdf.js — use local copy to avoid CDN fetch issues
+pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
 
 interface PdfViewerProps {
   fileUrl?: string;
@@ -36,12 +36,12 @@ export function PdfViewer({ fileUrl, fileName, fileData, onClose }: PdfViewerPro
 
   if (error) {
     return (
-      <div className="glass-card p-8 text-center">
-        <AlertCircle className="mx-auto h-8 w-8 text-red-soft" />
-        <p className="mt-3 text-sm text-zinc-300">{error}</p>
+      <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-card">
+        <AlertCircle className="mx-auto h-8 w-8 text-red" />
+        <p className="mt-3 text-sm text-gray-700">{error}</p>
         {fileName && (
           <div className="mt-4">
-            <p className="text-xs text-zinc-500 mb-2">Try downloading the file instead:</p>
+            <p className="text-xs text-gray-500 mb-2">Try downloading the file instead:</p>
             {fileUrl && (
               <a href={fileUrl} download className="primary-btn inline-flex items-center gap-2 text-sm">
                 <Download className="h-4 w-4" /> Download {fileName}
@@ -54,14 +54,14 @@ export function PdfViewer({ fileUrl, fileName, fileData, onClose }: PdfViewerPro
   }
 
   return (
-    <div className="glass-card overflow-hidden">
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-card overflow-hidden">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-white/5 px-4 py-2">
-        <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4 text-blue" />
-          <span className="text-sm text-zinc-300">{fileName || "Document"}</span>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 bg-gray-50 px-4 py-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <FileText className="h-4 w-4 text-blue shrink-0" />
+          <span className="text-sm text-gray-700 truncate">{fileName || "Document"}</span>
           {numPages > 0 && (
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-gray-400 shrink-0">
               Page {pageNumber} of {numPages}
             </span>
           )}
@@ -70,7 +70,7 @@ export function PdfViewer({ fileUrl, fileName, fileData, onClose }: PdfViewerPro
           <button onClick={() => setScale((s) => Math.max(0.5, s - 0.1))} className="ghost-btn p-1.5" title="Zoom out">
             <ZoomOut className="h-4 w-4" />
           </button>
-          <span className="text-xs text-zinc-400 min-w-[3rem] text-center">{Math.round(scale * 100)}%</span>
+          <span className="text-xs text-gray-500 min-w-[3rem] text-center">{Math.round(scale * 100)}%</span>
           <button onClick={() => setScale((s) => Math.min(2.0, s + 0.1))} className="ghost-btn p-1.5" title="Zoom in">
             <ZoomIn className="h-4 w-4" />
           </button>
@@ -86,7 +86,7 @@ export function PdfViewer({ fileUrl, fileName, fileData, onClose }: PdfViewerPro
       </div>
 
       {/* Document */}
-      <div className="flex justify-center bg-ink-900 p-4 max-h-[70vh] overflow-y-auto">
+      <div className="flex justify-center bg-gray-50 p-4 max-h-[70vh] overflow-y-auto">
         <Document
           file={fileSource}
           onLoadSuccess={onDocumentLoadSuccess}
@@ -102,14 +102,14 @@ export function PdfViewer({ fileUrl, fileName, fileData, onClose }: PdfViewerPro
             scale={scale}
             renderTextLayer={false}
             renderAnnotationLayer={false}
-            className="shadow-glass"
+            className="shadow-card"
           />
         </Document>
       </div>
 
       {/* Pagination */}
       {numPages > 1 && (
-        <div className="flex items-center justify-center gap-2 border-t border-white/10 bg-white/5 px-4 py-2">
+        <div className="flex items-center justify-center gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2">
           <button
             disabled={pageNumber <= 1}
             onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
@@ -117,7 +117,7 @@ export function PdfViewer({ fileUrl, fileName, fileData, onClose }: PdfViewerPro
           >
             Previous
           </button>
-          <span className="text-xs text-zinc-400">{pageNumber} / {numPages}</span>
+          <span className="text-xs text-gray-500">{pageNumber} / {numPages}</span>
           <button
             disabled={pageNumber >= numPages}
             onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}

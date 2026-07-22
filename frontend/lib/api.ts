@@ -24,3 +24,21 @@ export async function apiFetch<T = unknown>(
 export function apiUrl(path: string): string {
   return `${API_BASE}${path}`;
 }
+
+/**
+ * Read the persisted auth token (saved by the Zustand auth store under
+ * the "aihire-auth" localStorage key) and return an Authorization header.
+ * Returns an empty object when no token is present.
+ */
+export function authHeaders(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem("aihire-auth");
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    const token = parsed?.state?.token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}

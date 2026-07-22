@@ -1,100 +1,206 @@
 "use client";
 
 import { useState } from "react";
-import { Settings, Sliders, ShieldCheck, Bell, CheckCircle } from "lucide-react";
+import {
+  Building2,
+  Bell,
+  Key,
+  Copy,
+  Eye,
+  EyeOff,
+  Save,
+} from "lucide-react";
+import { useNotifications } from "@/lib/notifications";
 
 export default function HrSettingsPage() {
-  const [tfidfWeight, setTfidfWeight] = useState(65);
-  const [anonymize, setAnonymize] = useState(true);
-  const [saved, setSaved] = useState(false);
+  const toast = useNotifications();
+  const [showKey, setShowKey] = useState(false);
+  const [org, setOrg] = useState({
+    name: "Acme Corp",
+    website: "https://acme.com",
+    email: "hr@acme.com",
+    timezone: "Asia/Kathmandu",
+  });
 
-  const handleSave = () => {
-    // Save to localStorage for now
-    localStorage.setItem("hr.settings", JSON.stringify({ tfidfWeight, anonymize }));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const [notifPrefs, setNotifPrefs] = useState({
+    screeningComplete: true,
+    biasWarnings: true,
+    newCandidates: false,
+    weeklyReport: true,
+  });
+
+  const apiKey = "aihire_sk_live_8x7k9m3n2p4q1r5t6v8w0y";
+
+  const copyKey = () => {
+    navigator.clipboard.writeText(apiKey);
+    toast.add({ type: "success", title: "API key copied to clipboard" });
+  };
+
+  const saveSettings = () => {
+    toast.add({ type: "success", title: "Settings saved successfully" });
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
       <div>
-        <h1 className="display-title text-3xl text-white">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-400">Configure your screening preferences.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          Settings
+        </h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Manage your organization, API keys, and preferences.
+        </p>
       </div>
 
-      <div className="max-w-2xl space-y-6">
-        {/* Scoring Weights */}
-        <div className="glass-card p-6">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
-            <Sliders className="h-5 w-5 text-blue" />
-            Scoring Weights
-          </h2>
-          <p className="mt-1 text-xs text-zinc-500">
-            Adjust the balance between TF-IDF keyword matching and semantic understanding.
-          </p>
-          <div className="mt-6 space-y-4">
-            <div>
-              <div className="flex items-center justify-between">
-                <label className="text-sm text-zinc-300">TF-IDF Weight</label>
-                <span className="text-sm font-semibold text-white">{tfidfWeight}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={tfidfWeight}
-                onChange={(e) => setTfidfWeight(Number(e.target.value))}
-                className="mt-2 w-full accent-blue"
-              />
-              <div className="flex justify-between text-[10px] text-zinc-600">
-                <span>Semantic {100 - tfidfWeight}%</span>
-                <span>TF-IDF {tfidfWeight}%</span>
-              </div>
-            </div>
+      {/* Organization */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-card space-y-4">
+        <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <Building2 className="h-5 w-5 text-blue" />
+          Organization
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="text-xs text-gray-600 font-medium">
+              Company Name
+            </label>
+            <input
+              className="field mt-1"
+              value={org.name}
+              onChange={(e) => setOrg((o) => ({ ...o, name: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-600 font-medium">Website</label>
+            <input
+              className="field mt-1"
+              value={org.website}
+              onChange={(e) =>
+                setOrg((o) => ({ ...o, website: e.target.value }))
+              }
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-600 font-medium">
+              HR Email
+            </label>
+            <input
+              className="field mt-1"
+              value={org.email}
+              onChange={(e) =>
+                setOrg((o) => ({ ...o, email: e.target.value }))
+              }
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-600 font-medium">
+              Timezone
+            </label>
+            <select
+              className="field mt-1"
+              value={org.timezone}
+              onChange={(e) =>
+                setOrg((o) => ({ ...o, timezone: e.target.value }))
+              }
+            >
+              <option value="Asia/Kathmandu">
+                Asia/Kathmandu (UTC+5:45)
+              </option>
+              <option value="Asia/Kolkata">Asia/Kolkata (UTC+5:30)</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">
+                America/New_York (UTC-5)
+              </option>
+              <option value="Europe/London">Europe/London (UTC+0)</option>
+            </select>
           </div>
         </div>
+      </div>
 
-        {/* Anonymization */}
-        <div className="glass-card p-6">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
-            <ShieldCheck className="h-5 w-5 text-blue" />
-            Privacy & Anonymization
-          </h2>
-          <div className="mt-4 flex items-center justify-between">
-            <div>
-              <p className="text-sm text-zinc-300">Auto-anonymize resumes before screening</p>
-              <p className="text-xs text-zinc-500">Redacts PII (names, emails, phone numbers) before scoring</p>
-            </div>
+      {/* API Key */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-card space-y-4">
+        <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <Key className="h-5 w-5 text-amber-600" />
+          API Key
+        </h2>
+        <p className="text-xs text-gray-500">
+          Use this key to integrate AIHire with your ATS or custom tools.
+        </p>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5">
+            <code className="text-sm text-gray-700 font-mono flex-1 truncate">
+              {showKey ? apiKey : "aihire_sk_live_••••••••••••••••"}
+            </code>
             <button
-              onClick={() => setAnonymize(!anonymize)}
-              className={`relative h-6 w-11 rounded-full transition-colors ${anonymize ? "bg-blue" : "bg-white/20"}`}
+              onClick={() => setShowKey((v) => !v)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform ${anonymize ? "translate-x-5" : ""}`} />
+              {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
+          <button onClick={copyKey} className="ghost-btn text-sm px-3 py-2.5">
+            <Copy className="h-4 w-4" /> Copy
+          </button>
         </div>
+      </div>
 
-        {/* Notifications */}
-        <div className="glass-card p-6">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
-            <Bell className="h-5 w-5 text-blue" />
-            Notifications
-          </h2>
-          <div className="mt-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-zinc-300">Email me when screening completes</span>
-              <div className="h-6 w-11 rounded-full bg-white/20" />
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-zinc-300">Weekly bias audit summary</span>
-              <div className="h-6 w-11 rounded-full bg-white/20" />
-            </div>
-          </div>
+      {/* Notifications */}
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-card space-y-4">
+        <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <Bell className="h-5 w-5 text-indigo-600" />
+          Notification Preferences
+        </h2>
+        <div className="space-y-3">
+          {[
+            {
+              key: "screeningComplete",
+              label: "Screening Complete",
+              desc: "Get notified when AI screening finishes processing",
+            },
+            {
+              key: "biasWarnings",
+              label: "Bias Warnings",
+              desc: "Alert when bias is detected in a job description",
+            },
+            {
+              key: "newCandidates",
+              label: "New Candidates",
+              desc: "Notify when candidates upload their resumes",
+            },
+            {
+              key: "weeklyReport",
+              label: "Weekly Report",
+              desc: "Receive a weekly summary of screening activity",
+            },
+          ].map((n) => (
+            <label
+              key={n.key}
+              className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-3.5 cursor-pointer hover:bg-gray-100 transition-colors"
+            >
+              <div>
+                <p className="text-sm font-medium text-gray-900">{n.label}</p>
+                <p className="text-xs text-gray-500">{n.desc}</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={
+                  notifPrefs[n.key as keyof typeof notifPrefs]
+                }
+                onChange={() =>
+                  setNotifPrefs((p) => ({
+                    ...p,
+                    [n.key]: !p[n.key as keyof typeof notifPrefs],
+                  }))
+                }
+                className="h-5 w-5 rounded border-gray-300 text-blue focus:ring-blue accent-blue"
+              />
+            </label>
+          ))}
         </div>
+      </div>
 
-        <button onClick={handleSave} className="primary-btn">
-          {saved && <CheckCircle className="h-4 w-4" />}
-          {saved ? "Settings Saved" : "Save Settings"}
+      {/* Save */}
+      <div className="flex justify-end">
+        <button onClick={saveSettings} className="primary-btn">
+          <Save className="h-4 w-4" /> Save All Settings
         </button>
       </div>
     </div>

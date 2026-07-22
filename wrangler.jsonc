@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "aihire",
+  "compatibility_date": "2026-06-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "env": {
+    "production": {
+      "vars": {
+        "NEXT_PUBLIC_API_BASE": "https://api.aihire.dev",
+        "NEXT_PUBLIC_AI_API_BASE": "https://ai.aihire.dev"
+      },
+      "routing": {
+        "patterns": ["*"]
+      }
+    },
+    "staging": {
+      "vars": {
+        "NEXT_PUBLIC_API_BASE": "https://api.staging.aihire.dev",
+        "NEXT_PUBLIC_AI_API_BASE": "https://ai.staging.aihire.dev"
+      }
+    }
+  }
+}

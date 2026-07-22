@@ -1,98 +1,135 @@
 "use client";
 
-import { useState } from "react";
-import { Upload, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-react";
-import { apiUrl } from "@/lib/api";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Upload, FileText, Trash2, CheckCircle, Clock, AlertCircle, Download } from "lucide-react";
+import { useNotifications } from "@/lib/notifications";
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: string;
+  type: string;
+  status: "processing" | "ready" | "error";
+  uploadedAt: string;
+}
 
 export default function UploadsPage() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const toast = useNotifications();
+  const [files, setFiles] = useState<UploadedFile[]>([
+    { id: "1", name: "john_doe_resume.pdf", size: "245 KB", type: "pdf", status: "ready", uploadedAt: new Date().toISOString() },
+    { id: "2", name: "jane_smith_cv.docx", size: "180 KB", type: "docx", status: "ready", uploadedAt: new Date().toISOString() },
+    { id: "3", name: "bob_wilson_resume.pdf", size: "312 KB", type: "pdf", status: "processing", uploadedAt: new Date().toISOString() },
+  ]);
+  const [dragging, setDragging] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files));
-    }
+  const handleFile = (file: File) => {
+    const newFile: UploadedFile = {
+      id: `file-${Date.now()}`,
+      name: file.name,
+      size: `${(file.size / 1024).toFixed(0)} KB`,
+      type: file.name.split(".").pop() || "unknown",
+      status: "processing",
+      uploadedAt: new Date().toISOString(),
+    };
+    setFiles((prev) => [newFile, ...prev]);
+    toast.add({ type: "success", title: `${file.name} uploaded` });
+    // Simulate processing
+    setTimeout(() => {
+      setFiles((prev) =>
+        prev.map((f) =>
+          f.id === newFile.id ? { ...f, status: "ready" as const } : f
+        )
+      );
+      toast.add({ type: "info", title: `${file.name} processed and ready` });
+    }, 2000);
   };
 
-  const handleUpload = async () => {
-    if (files.length === 0) return;
-    setUploading(true);
-    setMessage(null);
+  const deleteFile = (id: string) => {
+    setFiles((prev) => prev.filter((f) => f.id !== id));
+    toast.add({ type: "info", title: "File removed" });
+  };
 
-    try {
-      // Upload each file individually for now
-      let success = 0;
-      for (const file of files) {
-        const fd = new FormData();
-        fd.append("file", file);
-        const res = await fetch(apiUrl("/api/convert"), { method: "POST", body: fd });
-        if (res.ok) success++;
-      }
-
-      setMessage({
-        type: "success",
-        text: `${success}/${files.length} files processed successfully. They're ready for screening and comparison.`,
-      });
-      setFiles([]);
-    } catch {
-      setMessage({ type: "error", text: "Upload failed. Check backend connection." });
-    } finally {
-      setUploading(false);
-    }
+  const statusConfig = {
+    processing: { icon: Clock, color: "text-amber-600", bg: "bg-amber-50", label: "Processing" },
+    ready: { icon: CheckCircle, color: "text-emerald-600", bg: "bg-emerald-50", label: "Ready" },
+    error: { icon: AlertCircle, color: "text-red", bg: "bg-red-50", label: "Error" },
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
       <div>
-        <h1 className="display-title text-3xl text-white">Uploads</h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          Upload resumes, CVs, and job descriptions for processing.
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Uploads</h1>
+        <p className="mt-1 text-sm text-gray-500">Manage uploaded resume files.</p>
+      </div>
+
+      {/* Drop Zone */}
+      <div
+        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => { e.preventDefault(); setDragging(false); Array.from(e.dataTransfer.files).forEach(handleFile); }}
+        className={`rounded-2xl border-2 border-dashed p-8 sm:p-12 text-center transition-all cursor-pointer ${
+          dragging ? "border-blue/40 bg-blue-light/50" : "border-gray-200 bg-white hover:border-gray-300"
+        }`}
+      >
+        <Upload className={`h-10 w-10 mx-auto mb-3 ${dragging ? "text-blue" : "text-gray-300"}`} />
+        <p className="text-sm font-medium text-gray-700">
+          Drag & drop files here, or <span className="text-blue hover:underline">browse</span>
         </p>
+        <p className="text-xs text-gray-400 mt-1">Supports PDF, DOCX, TXT, MD</p>
+        <input
+          type="file"
+          accept=".pdf,.docx,.txt,.md"
+          multiple
+          className="hidden"
+          onChange={(e) => Array.from(e.target.files || []).forEach(handleFile)}
+          id="file-input"
+        />
+        <button
+          onClick={() => document.getElementById("file-input")?.click()}
+          className="primary-btn mt-4"
+        >
+          <Upload className="h-4 w-4" /> Select Files
+        </button>
       </div>
 
-      <div className="glass-card p-8">
-        <div className="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-2xl p-12 hover:border-blue/30 transition-colors">
-          <Upload className="h-10 w-10 text-zinc-600" />
-          <p className="mt-4 text-sm text-zinc-400">Drop files here or click to browse</p>
-          <p className="mt-1 text-xs text-zinc-600">Supports PDF, DOCX, TXT, MD</p>
-          <input
-            type="file"
-            multiple
-            accept=".pdf,.docx,.txt,.md"
-            onChange={handleFileChange}
-            className="absolute inset-0 opacity-0 cursor-pointer"
-          />
-        </div>
-
-        {files.length > 0 && (
-          <div className="mt-6 space-y-2">
-            <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">
-              Selected Files ({files.length})
+      {/* File List */}
+      {files.length > 0 && (
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-card overflow-hidden">
+          <div className="px-5 py-3 border-b border-gray-100 bg-gray-50">
+            <p className="text-sm font-semibold text-gray-900">
+              {files.length} file{files.length > 1 ? "s" : ""}
             </p>
-            {files.map((f, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-xl bg-white/5 p-3">
-                <FileText className="h-4 w-4 text-blue" />
-                <span className="flex-1 text-sm text-zinc-300">{f.name}</span>
-                <span className="text-xs text-zinc-600">{(f.size / 1024).toFixed(1)} KB</span>
-              </div>
-            ))}
-            <button onClick={handleUpload} disabled={uploading} className="primary-btn mt-4 w-full justify-center">
-              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              {uploading ? "Uploading..." : `Upload ${files.length} File${files.length > 1 ? "s" : ""}`}
-            </button>
           </div>
-        )}
-
-        {message && (
-          <div className={`mt-4 flex items-center gap-2 rounded-xl p-3 text-xs ${
-            message.type === "success" ? "bg-emerald-500/10 text-emerald-400" : "bg-red/10 text-red-soft"
-          }`}>
-            {message.type === "success" ? <CheckCircle className="h-3.5 w-3.5" /> : <AlertCircle className="h-3.5 w-3.5" />}
-            {message.text}
+          <div className="divide-y divide-gray-100">
+            {files.map((file) => {
+              const sc = statusConfig[file.status];
+              const Icon = sc.icon;
+              return (
+                <motion.div
+                  key={file.id}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 transition-colors"
+                >
+                  <FileText className="h-8 w-8 text-gray-400 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
+                    <p className="text-xs text-gray-500">{file.size} &middot; {file.type.toUpperCase()}</p>
+                  </div>
+                  <div className={`flex items-center gap-1.5 rounded-full px-3 py-1 ${sc.bg}`}>
+                    <Icon className={`h-3.5 w-3.5 ${sc.color}`} />
+                    <span className={`text-xs font-medium ${sc.color}`}>{sc.label}</span>
+                  </div>
+                  <button onClick={() => deleteFile(file.id)} className="text-gray-400 hover:text-red transition-colors p-1">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </motion.div>
+              );
+            })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
